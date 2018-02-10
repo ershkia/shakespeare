@@ -84,7 +84,7 @@ namespace shakespeare.ui
         private static void PrintHeader()
         {
             PrintSucessMessage("Welcome to Shakespeare! Todo or not Todo that is the question.");
-            Console.WriteLine("At any moment type help for yours truely's assistance.\n");
+            Console.WriteLine("At any moment type help for royal assistance.\n");
         }
 
         private static void RunHelp()
@@ -154,7 +154,7 @@ namespace shakespeare.ui
             	PrintSucessMessage("May the majesty be always at peace with no todo items.\n");
 			}else
 			{
-				PrintSucessMessage("I hope I am not disturbing the mood by reminding your majesty's todo item.\n");
+				PrintSucessMessage("I hope I am not disturbing the mood by reminding your majesty of the todo items.\n");
             	PrintTodoItems(items);
 			}
         }
