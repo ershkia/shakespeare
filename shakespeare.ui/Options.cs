@@ -5,8 +5,9 @@ namespace shakespeare.ui {
 	[Verb( "add", HelpText = "Add new todo items." )]
 	class AddOptions {
 
-		[Option( 'i', "input", Required = true, HelpText = "Todo item description." )]
+		[Option( 'i', "item", Required = true, HelpText = "Todo item description." )]
 		public string Description { get; set; }
+		
 	}
 
 	[Verb( "delete", HelpText = "Delete existing todo items." )]
@@ -21,6 +22,11 @@ namespace shakespeare.ui {
 
 	[Verb( "exit", HelpText = "Exit Shakespeare." )]
 	class ExitOptions {
+		//normal options here
+	}
+
+	[Verb( "helpme", HelpText = "Help option." )]
+	class HelpOptions {
 		//normal options here
 	}
 
