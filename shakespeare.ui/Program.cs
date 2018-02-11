@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommandLine;
 using shakespeare.core;
 using shakespeare.core.dtos;
+using shakespeare.core.exceptions;
 
 namespace shakespeare.ui
 {
@@ -15,68 +15,78 @@ namespace shakespeare.ui
 
         static void Main(string[] args)
         {
-            Console.Clear();
-
-            PrintHeader();
-
-            while (!m_exit)
+            try
             {
-
-                Console.Write("\n> ");
-                string inputStr = Console.ReadLine();
-
                 Console.Clear();
+
                 PrintHeader();
 
-                if (string.IsNullOrEmpty(inputStr))
+                while (!m_exit)
                 {
-                    continue;
+
+                    Console.Write("\n> ");
+                    string inputStr = Console.ReadLine();
+
+                    Console.Clear();
+                    PrintHeader();
+
+                    if (string.IsNullOrEmpty(inputStr))
+                    {
+                        continue;
+                    }
+
+                    if (string.Equals(
+                        inputStr.Trim(), "list",
+                        StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        RunList();
+                        continue;
+                    }
+
+                    if (string.Equals(
+                        inputStr.Trim(), "delete",
+                        StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        RunDelete();
+                        continue;
+                    }
+
+                    if (string.Equals(
+                        inputStr.Trim(), "help",
+                        StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        RunHelp();
+                        continue;
+                    }
+
+                    if (string.Equals(
+                        inputStr.Trim(), "exit",
+                        StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        RunExit();
+                        continue;
+                    }
+
+                    if (inputStr.StartsWith("add", true, null))
+                    {
+                        string desc = new String(inputStr.SkipWhile(c => c != ' ').ToArray()).Trim();
+
+                        if (string.IsNullOrEmpty(desc))
+                        {
+                            PrintErrorMessage("I regret to say I am confused your honor. May I ask what you want me to remember.");
+                            continue;
+                        }
+                        RunAdd(desc);
+                        continue;
+                    }
+                    PrintErrorMessage("I cannot fathom the intricacies of your command my lord.");
+
                 }
-
-				if(string.Equals(
-					inputStr.Trim(), "list",
-					StringComparison.InvariantCultureIgnoreCase) )
-				{
-					RunList();
-					continue;
-				} 
-				
-				if(string.Equals(
-					inputStr.Trim(), "delete",
-					StringComparison.InvariantCultureIgnoreCase) )
-				{
-					RunDelete();
-					continue;
-				}
-				
-				if(string.Equals(
-					inputStr.Trim(),"help",
-					StringComparison.InvariantCultureIgnoreCase) )
-				{
-					RunHelp();
-					continue;
-				}
-				
-				if(string.Equals(
-					inputStr.Trim(), "exit",
-					StringComparison.InvariantCultureIgnoreCase) )
-				{
-					RunExit();
-					continue;
-				}
-
-				if(inputStr.StartsWith("add",true, null))
-				{
-					string desc = new String(inputStr.SkipWhile(c => c != ' ').ToArray()).Trim();
-					
-					if(string.IsNullOrEmpty(desc)){
-						PrintErrorMessage("I regret to say I am confused your honor. May I ask what you want me to remember.");
-						continue;
-					}
-					RunAdd(desc);
-					continue;
-				}
-				PrintErrorMessage("I cannot fathom the intricacies of your command my lord.");
+            }
+            catch (Exception)
+            {
+                //TODO log error here.
+                PrintErrorMessage("The horror! Your royal servant has crashed.");
 
             }
         }
@@ -89,11 +99,11 @@ namespace shakespeare.ui
 
         private static void RunHelp()
         {
-			PrintSucessMessage("May this help me to better be at your service my lord.\n");
-            
-			Console.WriteLine("add  my-item 		Adds my-item to the Todo list.");
+            PrintSucessMessage("May this help me to better be at your service my lord.\n");
+
+            Console.WriteLine("add  my-item 		Adds my-item to the Todo list.");
             Console.WriteLine("list          		Lists existing Todo items.");
-			Console.WriteLine("delete i      		Deletes item with index i in the list.");
+            Console.WriteLine("delete i      		Deletes item with index i in the list.");
         }
 
         private static void RunExit()
@@ -110,62 +120,73 @@ namespace shakespeare.ui
         }
 
         private static void RunDelete()
-        {			
-			TodoItem[] itemsArray = m_todoManager.GetItems().ToArray();
+        {
+            TodoItem[] itemsArray = m_todoManager.GetItems().ToArray();
 
-			if(itemsArray.Count() == 0)
-			{
-				PrintSucessMessage("Rest assured there is nothing to delete your honor.");
-				return;
-			}
+            if (itemsArray.Count() == 0)
+            {
+                PrintSucessMessage("Rest assured there is nothing to delete your honor.");
+                return;
+            }
 
-			PrintSucessMessage("Select the number to delete with the royal finger or type 0 if the majesty doesn't want to delete anything.\n");	
-			PrintTodoItems(itemsArray);
+            PrintSucessMessage("Select the number to delete with the royal finger or type 0 if the majesty doesn't want to delete anything.\n");
+            PrintTodoItems(itemsArray);
 
-			while(true)
-			{
-				Console.Write("\n>");
-				
-				string input = Console.ReadLine().ToString();
-				bool parsed = Int32.TryParse(input, out int index);
+            while (true)
+            {
+                Console.Write("\n>");
 
-				if(!parsed || index<0 || index>itemsArray.Count()){
-					
-					PrintErrorMessage("\nYour commands are always undoubtedly valid but this one is beyond my grasp. May I ask you to try again.");
-					continue;
-				}
+                string input = Console.ReadLine().ToString();
+                bool parsed = Int32.TryParse(input, out int index);
 
-				if(index == 0){
-					break;
-				}
+                if (!parsed || index < 0 || index > itemsArray.Count())
+                {
 
-				m_todoManager.DeleteItem(itemsArray[index-1].Id);
-				PrintSucessMessage("\nItem was deleted immediately your majesty.");
-				break;
-			}			
+                    PrintErrorMessage("\nYour commands are always undoubtedly valid but this one is beyond my grasp. May I ask you to try again.");
+                    continue;
+                }
+
+                if (index == 0)
+                {
+                    break;
+                }
+
+                try
+                {
+                    m_todoManager.DeleteItem(itemsArray[index - 1].Id);
+                }
+                catch (ItemNotFoundException)
+                {
+                    PrintSucessMessage("Life is full of surprises my honor. The item you ask me to delete somehow disapeared!");
+                }
+
+                PrintSucessMessage("\nItem was deleted immediately your majesty.");
+                break;
+            }
         }
 
         private static void RunList()
         {
-			var items = m_todoManager.GetItems();
-			
-			if(!items.Any())
-			{
-            	PrintSucessMessage("May the majesty be always at peace with no todo items.\n");
-			}else
-			{
-				PrintSucessMessage("I hope I am not disturbing the mood by reminding your majesty of the todo items.\n");
-            	PrintTodoItems(items);
-			}
+            var items = m_todoManager.GetItems();
+
+            if (!items.Any())
+            {
+                PrintSucessMessage("May the majesty be always at peace with no todo items.\n");
+            }
+            else
+            {
+                PrintSucessMessage("I hope I am not disturbing the mood by reminding your majesty of the todo items.\n");
+                PrintTodoItems(items);
+            }
         }
 
         private static void PrintTodoItems(IEnumerable<TodoItem> items)
         {
-			int i = 1;
+            int i = 1;
             foreach (var item in items)
             {
                 Console.WriteLine($"{i}. {item.Description}");
-				i++;
+                i++;
             }
         }
 

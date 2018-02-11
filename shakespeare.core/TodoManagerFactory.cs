@@ -2,7 +2,7 @@ using shakespeare.core.utilities;
 
 namespace shakespeare.core
 {
-    public class TodoManagerFactory
+    public static class TodoManagerFactory
     {
         public static ITodoManager Create()
         {
