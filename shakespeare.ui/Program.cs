@@ -11,7 +11,7 @@ namespace shakespeare.ui
     {
 
         private static bool m_exit = false;
-        private static ITodoManager m_todoManager = new TodoManager();
+        private static ITodoManager m_todoManager = TodoManagerFactory.Create();
 
         static void Main(string[] args)
         {
@@ -119,7 +119,7 @@ namespace shakespeare.ui
 				return;
 			}
 
-			PrintSucessMessage("Select the number to delete with the royal finger or type 0 if the majesty doesn't want to delete anything..\n");	
+			PrintSucessMessage("Select the number to delete with the royal finger or type 0 if the majesty doesn't want to delete anything.\n");	
 			PrintTodoItems(itemsArray);
 
 			while(true)

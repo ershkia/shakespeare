@@ -8,14 +8,13 @@ namespace shakespeare.core.dtos
         {
             Id = id;
             Description = description;
-            CreatedAt = LastUpdatedAt = DateTime.UtcNow;
+            CreatedAt = createdAt;
         }
 
         public Guid Id { private set; get; }
         public string Description { private set; get; }
         public DateTime CreatedAt { private set; get; }
-        public DateTime LastUpdatedAt { private set; get; }
-        public bool Checked { set; get; }
+        public DateTime DeletedAt { set; get; }
         public bool Deleted { set; get; }
     }
 }

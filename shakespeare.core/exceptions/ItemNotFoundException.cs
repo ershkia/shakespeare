@@ -1,11 +1,14 @@
 using System;
 
-public class ItemNotFoundException : Exception
+namespace shakespeare.core.exceptions
 {
-    public ItemNotFoundException(Guid todoItemId)
+    public class ItemNotFoundException : Exception
     {
-        TodoItemId = todoItemId;
-    }
+        public ItemNotFoundException(Guid todoItemId)
+        {
+            TodoItemId = todoItemId;
+        }
 
-    public Guid TodoItemId { private set; get; }
+        public Guid TodoItemId { private set; get; }
+    }
 }

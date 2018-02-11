@@ -8,8 +8,6 @@ namespace shakespeare.core
     {
         void SaveItem(string description);
         void DeleteItem(Guid id);
-        void CheckItem( Guid id);
-        void UncheckItem(Guid id);
         IEnumerable<TodoItem> GetItems();
     }
 }
