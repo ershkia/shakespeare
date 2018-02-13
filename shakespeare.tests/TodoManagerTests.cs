@@ -24,7 +24,8 @@ namespace shakespeare.tests {
 
 		[TestMethod]
 		public void CreateItem_SavesTodoItem() {
-			m_todoManager.SaveItem( "something" );
+			int priority = 5;
+			m_todoManager.SaveItem( "something", priority );
 
 			var result = m_todoManager.GetItems();
 			Assert.IsNotNull( result );
@@ -32,6 +33,7 @@ namespace shakespeare.tests {
 			IList<TodoItem> items = result.ToList();
 			Assert.AreEqual( 1, items.Count );
 			Assert.AreEqual( "something", items[0].Description );
+			Assert.AreEqual( priority, items[0].Priority );
 			Assert.AreEqual( false, items[0].Deleted );
 			Assert.AreEqual( items[0].CreatedAt, m_now );
 		}

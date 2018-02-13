@@ -58,13 +58,22 @@ namespace shakespeare.ui {
 					}
 
 					if( inputStr.StartsWith( "add", true, null ) ) {
-						string desc = new String( inputStr.SkipWhile( c => c != ' ' ).ToArray() ).Trim();
-
-						if( string.IsNullOrEmpty( desc ) ) {
+						string [] parts = inputStr.Split( ' ' );
+						if(parts.Count() < 3 ) {
 							PrintErrorMessage( "I regret to say I am confused your honor. May I ask what you want me to remember." );
-							continue;
 						}
-						RunAdd( desc );
+						bool priorityResult = Int32.TryParse( parts[1], out int priority );
+						if( !priorityResult ) {
+							PrintErrorMessage( "I regret to say I am confused your honor. May I ask what you want me to remember." );
+						}
+
+						string desc = string.Join( ' ', parts.Skip( 2 ) ); 
+
+						RunAdd( desc, priority );
+						continue;
+					}
+					if( inputStr.StartsWith( "report" ) ) {
+						ShowReport();
 						continue;
 					}
 					PrintErrorMessage( "I cannot fathom the intricacies of your command my lord." );
@@ -95,10 +104,17 @@ namespace shakespeare.ui {
 			PrintSucessMessage( "Farewell your majesty, Long live the king.\n" );
 		}
 
-		private static void RunAdd( string item ) {
-			m_todoManager.SaveItem( item );
+		private static void RunAdd( string item, int priority ) {
+			m_todoManager.SaveItem( item, priority );
 
 			PrintSucessMessage( "Your command was instantly executed your honor." );
+		}
+
+		private static void ShowReport() {
+			var report = m_todoManager.GetPrioirtyReport();
+			foreach(var priority in report ) {
+				Console.WriteLine( $"Priority {priority.Key} : {priority.Value}" );
+			}
 		}
 
 		private static void RunDelete() {
@@ -153,7 +169,7 @@ namespace shakespeare.ui {
 		private static void PrintTodoItems( IEnumerable<TodoItem> items ) {
 			int i = 1;
 			foreach( var item in items ) {
-				Console.WriteLine( $"{i}. {item.Description}" );
+				Console.WriteLine( $"{i}. {item.Description} - {item.Priority}" );
 				i++;
 			}
 		}
